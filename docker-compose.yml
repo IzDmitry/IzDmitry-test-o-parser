@@ -1,0 +1,86 @@
+services:
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 160
+
+  web:
+    build:
+      context: ./backend
+    command: gunicorn --bind 0.0.0.0:8000 backend.wsgi
+    expose:
+      - 8000
+    env_file:
+      - ./.env
+    links:
+      - db
+    depends_on: 
+      db: 
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/admin/"]
+      timeout: 5s
+      retries: 160
+
+  selenium-hub:
+    image: selenium/hub:3.141.59-20210929
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+
+  chrome:
+    image: selenium/node-chrome:3.141.59-20210929
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+      - NODE_MAX_INSTANCES=3
+      - NODE_MAX_SESSION=3
+
+  celery:
+    build: ./backend
+    command: celery -A backend worker -l INFO
+    env_file:
+      - ./.env
+    depends_on: 
+      web: 
+        condition: service_healthy
+
+  bot:
+    build: ./bot
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+    links:
+      - db
+    depends_on:
+      web: 
+        condition: service_healthy
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 8000:8000
+    depends_on: 
+      web: 
+        condition: service_healthy
