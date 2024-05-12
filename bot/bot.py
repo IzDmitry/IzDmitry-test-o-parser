@@ -11,12 +11,6 @@ from tgbot.handlers.user import any_user, get_product
 # middlewares
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 
-# states
-from tgbot.states.register_state import Register
-
-# utils
-from tgbot.utils.database import Database
-
 # telebot
 from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_filters import TextMatchFilter
@@ -39,7 +33,9 @@ def register_handlers():
                                  admin=False, pass_bot=True)
     bot.register_message_handler(anti_spam, commands=['spam'], pass_bot=True)
 
-    bot.register_message_handler(get_product, text=[markup.get_text('get_product')], pass_bot=True)
+    bot.register_message_handler(get_product,
+                                 text=[markup.get_text('get_product')],
+                                 pass_bot=True)
 
 
 register_handlers()
@@ -53,11 +49,8 @@ bot.add_custom_filter(AdminFilter())
 bot.add_custom_filter(TextMatchFilter())
 
 
-
 async def run():
     await bot.polling(non_stop=True)
 
-
-asyncio.run(run())
 
 asyncio.run(run())

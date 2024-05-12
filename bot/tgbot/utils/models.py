@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Text, Date
+from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
+
 
 class Product(Base):
     __tablename__ = 'products_product'
@@ -13,4 +14,4 @@ class Product(Base):
     image_url = Column(String, nullable=True)
     discount = Column(String(200), nullable=True)
     url = Column(String, nullable=True)
-    date = Column(Date, nullable=True)
+    date = Column(DateTime, nullable=True)

@@ -1,6 +1,5 @@
-from telebot.asyncio_filters import SimpleCustomFilter, AdvancedCustomFilter
+from telebot.asyncio_filters import SimpleCustomFilter
 from tgbot.models.users_model import Admin
-
 
 
 class AdminFilter(SimpleCustomFilter):

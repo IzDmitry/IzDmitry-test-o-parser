@@ -1,7 +1,6 @@
 from telebot.async_telebot import AsyncTeleBot
-from telebot.types import Message, CallbackQuery
+from telebot.types import Message
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
-from tgbot.states.register_state import Register
 from tgbot.utils.database import Database
 from tgbot.markups.markup import BuildMarkup
 
@@ -17,7 +16,6 @@ async def any_user(message: Message, bot: AsyncTeleBot):
 
     try:
         text = 'Выберите действие'
-        print(db.get_products())
         await bot.send_message(message.chat.id, text,
                                reply_markup=markup.main_menu())
     except (ConnectionError, Timeout, TooManyRedirects) as e:
@@ -27,9 +25,7 @@ async def any_user(message: Message, bot: AsyncTeleBot):
 async def get_product(message: Message, bot: AsyncTeleBot):
     try:
         products = db.get_products()
-
-        text = f"Результат последнего парсинга:\n\nДата:\n\n"  # Вставляем пустую переменную date
-        
+        text = "Результат последнего парсинга:\n\nДата:\n\n"
         count = 1
         for product in products.values():
             product['name'] = product['name'].replace("-", "\-")
@@ -37,21 +33,8 @@ async def get_product(message: Message, bot: AsyncTeleBot):
             text += f"{count}\. {product['name']} [ссылка]({product['url']})\n\n"
             count += 1
             date = product['date']
-        
-        text = text.replace("Дата:\n\n", f"Дата: {date.strftime('%d/%m/%Y')}\n\n")  
-        
+        text = text.replace("Дата:\n\n",
+                            f"Дата: {date.strftime('%d/%m/%Y %H:%M')}\n\n")
         await bot.send_message(message.chat.id, text, parse_mode='MarkdownV2')
-    
     except (ConnectionError, TimeoutError, TooManyRedirects) as e:
         print(e)
-
-
-
-
-
-
-
-
-
-
-

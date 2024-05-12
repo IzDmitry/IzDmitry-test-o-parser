@@ -25,7 +25,7 @@ services:
   web:
     build:
       context: ./backend
-    command: gunicorn --bind 0.0.0.0:8000 backend.wsgi
+    command: gunicorn --bind 0.0.0.0:8000 --timeout 999 --workers=3 --threads=3 --worker-connections=1000 backend.wsgi
     expose:
       - 8000
     env_file:
@@ -69,8 +69,8 @@ services:
 
   bot:
     build: ./bot
-    environment:
-      BOT_TOKEN: ${BOT_TOKEN}
+    env_file:
+      - ./.env
     links:
       - db
     depends_on:

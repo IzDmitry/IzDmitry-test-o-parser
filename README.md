@@ -1,4 +1,4 @@
-# Ozon Parser (тестовая работа)
+# IzDmitry-test-o-parser
 
 ## Описание
 
@@ -9,97 +9,22 @@
 ## Содержание
 
 - [Особенности](#особенности)
-    - [Структура](#структура)
-    - [Требования](#требования)
-    - [Установка](#установка)
-- [Использование](#использование)
-    - [HTTP Запросы](#http-запросы)
-- [Лицензия](#лицензия)
+- [Установка](#установка)
+- [HTTP Запросы](#http-запросы)
 
 ## Особенности
 
-- Для обхода защиты Cloudflare используется докер-контейнер, в котором находится headless браузер с драйверами, из-за
-  чего проект можно деплоить на машину без GUI и установленных браузеров
-- Задачи выполняются асинхронно, с использованием Celery
-- Интегрирован телеграм бот, с его помощью можно получить данные из БД, используя Redis. Так же он присылает уведомления
-  с результатом парсинга
-- В качестве базы данных используется MySQL
-- Автоматическая генерация документации с использованием спецификации OpenAPI
-- Кастомная админ панель
 - Полностью автоматизированное развертывание
 
-## Структура
-
-```plaintext
-test-web-o-parser/
-│  
-├── ozon_parser/
-│   ├── ozon_parser/
-│   │   ├── celery.py
-│   │   └── ...
-│   ├── core/
-│   │   ├── tasks.py
-│   │   └── ...
-│   ├── Dockerfile
-│   ├── env.example
-│   ├── requirements.txt
-│   └── ...
-│  
-├── telegram_bot/
-│   ├── Dockerfile
-│   ├── env.example
-│   ├── requirements.txt
-│   └── ...
-│  
-├── infra/
-│   ├── env.example
-│   └── docker-compose.yml
-│   
-├── .gitignore
-├── README.md
-└── ...
-```
-
-## Требования
-
-- Docker
-- Docker Compose
 
 ## Установка
-
-1. Клонируйте этот репозиторий: `git clone git@github.com:mxstrv/mxstrv-test-o-parser.git`
-2. Перейдите в директорию приложения: `cd mxstrv-test-o-parser`
-3. Скопируйте `.env.example` в `.env` и настройте переменные окружения в соответствии с вашими требованиями
-
-## Использование
-
-1. Перейдите в папку infra:
-
-```sh
-cd infra/
-```
-
-2. Запустите приложение с помощью Docker Compose:
-
-```sh
-docker compose up -d --build
-```
-
-3. Выполните миграции для работы с базой данных (выполняется один раз при создании Docker Volume):
-
-```sh
-docker exec django_backend python manage.py migrate
-```
-
-4. Запустите Celery worker:
-
-```sh
-docker exec -d django_backend celery -A ozon_parser worker -l INFO
-```
+1. Выполните команду `docker-compose up`.
 
 ### Проект доступен по ссылке http://localhost:8000/
 
-#### Документация http://localhost:8000/redoc
+### Бот доступен по ссылке https://t.me/testaicbot
+
+#### Документация http://localhost:8000/redoc/
 
 ## HTTP Запросы
 
@@ -114,14 +39,3 @@ docker exec -d django_backend celery -A ozon_parser worker -l INFO
 ### POST `/v1/products`
 
 В body передается требуемое количество товаров для парсинга(необязательный параметр)
-
-**Пример запроса:**
-
-```sh
-curl -X POST -H "Content-Type: application/json" -d '{"products_count": 20}' \
-http://localhost:8000/v1/products/
-```
-
-## Лицензия
-
-Этот проект лицензирован в соответствии с лицензией MIT. Подробности смотрите в файле LICENSE.

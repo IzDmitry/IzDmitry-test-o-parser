@@ -7,7 +7,7 @@ class ProductSerializer(serializers.ModelSerializer):
     """
     Сериализатор для объектов Product.
 
-    Метод create(self, validated_data) - Сохраняет книгу в базе данных
+    Метод create(self, validated_data) - Начинает парсинг товаров
     Метод to_representation(self, instance) - Возвращает словарное
     представление модели
     """
@@ -25,14 +25,12 @@ class ProductSerializer(serializers.ModelSerializer):
         products_count = min(max(products_count, 1), 50)
 
         json = parce_product_task(products_count)
-        
         return {'input': {'products_count': products_count},
-                'output':[json]}
+                'output': [json]}
 
     def to_representation(self, instance):
         # Получаем метод HTTP-запроса
         method = self.context['request'].method
-        
         if method == 'POST':
             # Возвращаем значение products_count при POST-запросе
             return instance

@@ -30,5 +30,3 @@ class BuildMarkup:
             self.get_button('get_product'),
             self.get_button('follow'),
         )
-
-        return markup
